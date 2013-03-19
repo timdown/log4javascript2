@@ -1,0 +1,26 @@
+{
+    "name": "log4javascript",
+    "description": "JavaScript logging framework based on the API of the Java logging framework log4j",
+    "version": 2,
+    "homepage": "http://log4javascript.org/",
+    "author": {
+        "name": "Tim Down"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/timdown/log4javascript2.git"
+    },
+    "bugs": {
+        "url": "https://github.com/timdown/log4javascript2/issues"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://github.com/timdown/log4javascript2/blob/master/LICENSE-MIT"
+        },
+        {
+            "type": "Apache",
+            "url": "http://github.com/timdown/log4javascript2/blob/master/LICENSE-Apache"
+        }
+    ]
+}
