@@ -1,0 +1,2 @@
+- Close (x) button on InPageAppender
+- Separate AMD modules for appenders?

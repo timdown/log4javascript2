@@ -1,26 +1,37 @@
 {
-    "name": "log4javascript",
-    "description": "JavaScript logging framework based on the API of the Java logging framework log4j",
-    "version": 2,
-    "homepage": "http://log4javascript.org/",
-    "author": {
-        "name": "Tim Down"
+  "name": "log4javascript",
+  "description": "JavaScript logging framework based on the API of the Java logging framework log4j",
+  "version": "2.0.0",
+  "homepage": "http://log4javascript.org/",
+  "author": {
+    "name": "Tim Down"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/timdown/log4javascript2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/timdown/log4javascript2/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/timdown/log4javascript2/blob/master/LICENSE-MIT"
     },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/timdown/log4javascript2.git"
-    },
-    "bugs": {
-        "url": "https://github.com/timdown/log4javascript2/issues"
-    },
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "http://github.com/timdown/log4javascript2/blob/master/LICENSE-MIT"
-        },
-        {
-            "type": "Apache",
-            "url": "http://github.com/timdown/log4javascript2/blob/master/LICENSE-Apache"
-        }
-    ]
+    {
+      "type": "Apache",
+      "url": "http://github.com/timdown/log4javascript2/blob/master/LICENSE-Apache"
+    }
+  ],
+  "dependencies": {
+    "grunt": "~0.4.1"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "intern": "~1.2.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-qunit": "~0.2.2",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-jshint": "~0.6.4"
+  }
 }
