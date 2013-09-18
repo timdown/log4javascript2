@@ -333,6 +333,10 @@
         }
         return nullLogger;
     };
+    
+    api.destroyLogger = function(name) {
+        delete loggers[name];
+    };
 
     // Destroys all loggers
     api.resetConfiguration = function() {
