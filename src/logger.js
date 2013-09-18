@@ -291,10 +291,12 @@
     api.getRootLogger = function() {
         return rootLogger;
     };
-
-    api.loggerExists = function(loggerName) {
+    
+    function loggerExists(loggerName) {
         return loggers[loggerName] instanceof Logger;
-    };
+    }
+
+    api.loggerExists = loggerExists;
 
     function getLogger(loggerName) {
         var logger, lastDotIndex, parentLogger, parentLoggerName;
@@ -305,7 +307,7 @@
         }
 
         // Create the logger for this name if it doesn't already exist
-        if (!api.loggerExists(loggerName)) {
+        if (!loggerExists(loggerName)) {
             logger = new Logger(loggerName);
             loggers[loggerName] = logger;
 
@@ -334,8 +336,12 @@
         return nullLogger;
     };
     
-    api.destroyLogger = function(name) {
-        delete loggers[name];
+    api.destroyLogger = function(loggerName) {
+        var exists = loggerExists(loggerName);
+        if (exists) {
+            delete loggers[loggerName];
+        }
+        return exists;
     };
 
     // Destroys all loggers
