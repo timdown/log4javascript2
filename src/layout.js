@@ -9,8 +9,8 @@
         this.name = name;
     }
 
-    Layout.prototype = {
-        defaults: {
+    api.extend(Layout.prototype, {
+        keys: api.createSettings({
             loggerKey: "logger",
             timeStampKey: "timestamp",
             millisecondsKey: "milliseconds",
@@ -18,14 +18,7 @@
             messageKey: "message",
             exceptionKey: "exception",
             urlKey: "url"
-        },
-        loggerKey: "logger",
-        timeStampKey: "timestamp",
-        millisecondsKey: "milliseconds",
-        levelKey: "level",
-        messageKey: "message",
-        exceptionKey: "exception",
-        urlKey: "url",
+        }),
         batchHeader: "",
         batchFooter: "",
         batchSeparator: "",
@@ -71,62 +64,56 @@
 
         // TODO: Test for environment (eg browser, test by presence of window object)
         getDataValues: function(loggingEvent, combineMessages) {
+            var keys = this.keys;
             var dataValues = [
-                [this.loggerKey, loggingEvent.logger.name],
-                [this.timeStampKey, this.getTimeStampValue(loggingEvent)],
-                [this.levelKey, loggingEvent.level.name],
-                [this.messageKey, combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages]
+                [keys.loggerKey, loggingEvent.logger.name],
+                [keys.timeStampKey, this.getTimeStampValue(loggingEvent)],
+                [keys.levelKey, loggingEvent.level.name],
+                [keys.messageKey, combineMessages ? loggingEvent.getCombinedMessages() : loggingEvent.messages]
             ];
 
             if (api.environment.isBrowser) {
-                dataValues[dataValues.length] = [this.urlKey, pageHref];
+                dataValues.push( [this.urlKey, pageHref] );
             }
 
             if (!this.isTimeStampsInMilliseconds()) {
-                dataValues[dataValues.length] = [this.millisecondsKey, loggingEvent.milliseconds];
+                dataValues.push( [this.millisecondsKey, loggingEvent.milliseconds] );
             }
 
             if (loggingEvent.exception) {
-                dataValues[dataValues.length] = [this.exceptionKey, exceptionToStr(loggingEvent.exception)];
+                dataValues.push( [this.exceptionKey, exceptionToStr(loggingEvent.exception)] );
             }
 
-            if (this.hasCustomFields()) {
-                for (var i = 0, len = this.customFields.length, val; i < len; ++i) {
-                    val = this.customFields[i].value;
+            var customFields = this.customFields;
+            for (var i = 0, len = customFields.length, val; i < len; ++i) {
+                val = customFields[i].value;
 
-                    // Check if the value is a function. If so, execute it, passing it the
-                    // current layout and the logging event
-                    if (typeof val == FUNCTION) {
-                        val = val(this, loggingEvent);
-                    }
-                    dataValues[dataValues.length] = [this.customFields[i].name, val];
+                // Check if the value is a function. If so, execute it, passing it the
+                // current layout and the logging event
+                if (typeof val == FUNCTION) {
+                    val = val(this, loggingEvent);
                 }
+                dataValues.push( [customFields[i].name, val] );
             }
             return dataValues;
         },
 
-        setKeys: function(loggerKey, timeStampKey, levelKey, messageKey, exceptionKey, urlKey, millisecondsKey) {
+        setKeys: function(keys) {
             var d = this.defaults;
-            this.loggerKey = stringParam(loggerKey, d.loggerKey);
-            this.timeStampKey = stringParam(timeStampKey, d.timeStampKey);
-            this.levelKey = stringParam(levelKey, d.levelKey);
-            this.messageKey = stringParam(messageKey, d.messageKey);
-            this.exceptionKey = stringParam(exceptionKey, d.exceptionKey);
-            this.urlKey = stringParam(urlKey, d.urlKey);
-            this.millisecondsKey = stringParam(millisecondsKey, d.millisecondsKey);
+            this.keys.set(keys);
         },
 
         setCustomField: function(name, value) {
-            var fieldUpdated = false, customField;
-            for (var i = 0, len = this.customFields.length; i < len; ++i) {
-                customField = this.customFields[i];
+            var fieldUpdated = false, customField, customFields = this.customFields;
+            for (var i = 0, len = customFields.length; i < len; ++i) {
+                customField = customFields[i];
                 if (customField.name === name) {
                     customField.value = value;
                     fieldUpdated = true;
                 }
             }
             if (!fieldUpdated) {
-                this.customFields[this.customFields.length] = {"name": name, "value": value};
+                customFields.push( {"name": name, "value": value} );
             }
         },
 
@@ -137,7 +124,7 @@
         toString: function() {
             return this.name;
         }
-    };
+    });
 
     api.Layout = Layout;
 })(log4javascript);

@@ -92,7 +92,7 @@
         this.minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
     }
 
-    SimpleDateFormat.prototype = {
+    api.extend(SimpleDateFormat.prototype, {
         /**
          * Sets the minimum number of days in a week in order for that week to be considered as belonging to a
          * particular month or year
@@ -222,7 +222,7 @@
                 }
             });
         }
-    };
+    });
 
     api.SimpleDateFormat = SimpleDateFormat;
 })(log4javascript);

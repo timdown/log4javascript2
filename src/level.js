@@ -5,7 +5,7 @@
         this.colour = colour;
     }
 
-    Level.prototype = {
+    api.extend(Level.prototype = {
         toString: function() {
             return this.name;
         },
@@ -17,7 +17,7 @@
         isGreaterOrEqual: function(level) {
             return this.level >= level.level;
         }
-    };
+    });
 
     Level.levels = [];
 

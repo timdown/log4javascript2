@@ -47,9 +47,9 @@
                     if (specifier) {
                         depth = parseInt(specifier, 10);
                         if (isNaN(depth)) {
-                            reportError(errPrefix + "invalid specifier '" + specifier
-                                    + "' for conversion character '" + conversionCharacter
-                                    + "' - should be a number");
+                            reportError(errPrefix + "invalid specifier '" + specifier +
+                                    "' for conversion character '" + conversionCharacter +
+                                    "' - should be a number");
                             depth = 0;
                         }
                     }

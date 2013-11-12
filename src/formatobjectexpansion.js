@@ -45,7 +45,7 @@
             this.nodes = [];
         }
 
-        Node.prototype = {
+        api.extend(Node.prototype, {
             toDefaultString: function(indentation, lines, expansion) {
                 var i, len, line;
                 lines = lines || [];
@@ -91,7 +91,7 @@
                 return lines;
             }
 
-        };
+        });
 
         function Expansion(obj, maxDepth, showMethods, alphabetical, quoteStrings) {
             this.maxDepth = maxDepth;
@@ -104,7 +104,7 @@
             this.rootNode = expand(obj, maxDepth, this);
         }
 
-        Expansion.prototype = {
+        api.extend(Expansion.prototype, {
             registerObjectExpansion: function(object, expansionNode) {
                 var objectExpandedIndex = this.expandedObjects.length;
                 this.expandedObjects[objectExpandedIndex] = object;
@@ -119,7 +119,7 @@
             toDefaultString: function() {
                 return this.rootNode.toDefaultString("", [], this);
             }
-        };
+        });
 
         function expand(obj, levels, expansion, propertyName) {
             var i, len, objectExpansion, childLevels, node;

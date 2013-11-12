@@ -6,7 +6,7 @@
 
     function Appender() {}
 
-    Appender.prototype = {
+    api.extend(Appender.prototype, {
         threshold: Level.ALL,
 
         // Performs threshold checks before delegating actual logging to the Appender's specific append method.
@@ -60,7 +60,7 @@
         toString: function() {
             return "[Appender]";
         }
-    };
+    });
 
     api.addCustomEventSupport(Appender.prototype);
 

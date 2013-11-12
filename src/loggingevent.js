@@ -10,7 +10,7 @@
         this.exception = exception;
     };
 
-    LoggingEvent.prototype = {
+    api.extend(LoggingEvent.prototype = {
         getThrowableStrRep: function() {
             return this.exception ? api.exceptionToStr(this.exception) : "";
         },
@@ -37,7 +37,7 @@
         toString: function() {
             return "LoggingEvent[" + this.level + "]";
         }
-    };
+    });
 
     api.LoggingEvent = LoggingEvent;
 })(log4javascript);

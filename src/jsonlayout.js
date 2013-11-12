@@ -69,8 +69,8 @@
 
             for (var i = 0, finalIndex = dataValues.length - 1, dataValue; i <= finalIndex; ++i) {
                 dataValue = dataValues[i];
-                str += this.tab + "\"" + dataValue[0] + "\"" + this.colon
-                        + formatValue(dataValue[1], this.tab, true, this.lineBreak, this.tab);
+                str += this.tab + "\"" + dataValue[0] + "\"" + this.colon +
+                        formatValue(dataValue[1], this.tab, true, this.lineBreak, this.tab);
 
                 if (i < finalIndex) {
                     str += ",";

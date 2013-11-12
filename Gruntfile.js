@@ -1,9 +1,11 @@
 /*global module:false*/
 module.exports = function(grunt) {
-
+    var unminifiedFile = 'dist/<%= pkg.name %>.js';
+    var minifiedFile = 'dist/<%= pkg.name %>.min.js';
+    
     // Project configuration.
     grunt.initConfig({
-        pkg: '<json:package.json>',
+        pkg: grunt.file.readJSON('package.json'),
         meta: {
             banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
                 '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -12,15 +14,34 @@ module.exports = function(grunt) {
                 ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
         },
         lint: {
-            files: ['grunt.js', 'lib/**/*.js', 'test/**/*.js']
+            files: ['src/**/*.js', 'test/**/*.js']
         },
         qunit: {
             files: ['test/**/*.html']
         },
         concat: {
             dist: {
-                src: ['<banner:meta.banner>', 'src/core.js'],
-                dest: 'dist/<%= pkg.name %>.js'
+                src: [
+                    '<banner:meta.banner>',
+                    'src/core.js',
+                    'src/level.js',
+                    'src/timer.js',
+                    'src/layout.js',
+                    'src/renderer.js',
+                    'src/loggingevent.js',
+                    'src/appender.js',
+                    'src/formatobjectexpansion.js',
+                    'src/nulllayout.js',
+                    'src/simplelayout.js',
+                    'src/httppostdatalayout.js',
+                    'src/jsonlayout.js',
+                    'src/xmllayout.js',
+                    'src/simpledateformat.js',
+                    'src/patternlayout.js',
+                    'src/alertappender.js',
+                    'src/browserconsoleappender.js'
+                ],
+                dest: unminifiedFile
             }
         },
         min: {
@@ -36,7 +57,7 @@ module.exports = function(grunt) {
         jshint: {
             options: {
                 curly: true,
-                eqeqeq: true,
+                eqeqeq: false,
                 immed: true,
                 latedef: true,
                 newcap: true,
@@ -49,9 +70,18 @@ module.exports = function(grunt) {
             },
             globals: {
                 jQuery: false
-            }
+            },
+            afterconcat: [unminifiedFile]
         },
-        uglify: {}
+        uglify: {
+            options: {
+                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+            },
+            build: {
+                src: unminifiedFile,
+                dest: minifiedFile
+            }
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -60,5 +90,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-qunit');
 
     // Default task.
-    grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+    grunt.registerTask('default', ['jshint'/*, 'qunit'*/, 'concat', 'uglify']);
 };

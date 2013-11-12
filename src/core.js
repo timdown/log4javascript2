@@ -61,9 +61,9 @@ var log4javascript = (function() {
     function isArrayLike(o) {
         return o instanceof Array ||
             objectToString.call(o) == "[object Array]" ||
-            (typeof o == OBJECT && isFinite(o.length)
+            (typeof o == OBJECT && isFinite(o.length) &&
                 /* Duck typing check for Array objects, arguments objects and IE node lists respectively */
-                && (typeof o.splice != UNDEFINED || typeof o.callee == FUNCTION || typeof o.item != UNDEFINED) ) ||
+                (typeof o.splice != UNDEFINED || typeof o.callee == FUNCTION || typeof o.item != UNDEFINED) ) ||
             (nodeListExists && o instanceof global.NodeList) ||
             (htmlCollectionExists && o instanceof global.HTMLCollection);
     }
@@ -125,13 +125,6 @@ var log4javascript = (function() {
     api.enabled = !( (typeof global.log4javascript_disabled != UNDEFINED) && global.log4javascript_disabled );
     api.addCustomEventSupport = addCustomEventSupport;
     api.globalObj = global;
-
-    // This evaluates the given expression in the current scope, thus allowing scripts to access private variables.
-    // Particularly useful for testing
-    api.evalInScope = function(expr) {
-        return eval(expr);
-    };
-
     api.showStackTraces = false;
 
     function reportError(message, exception) {
@@ -153,8 +146,8 @@ var log4javascript = (function() {
     /* Core feature tests */
 
     function failCoreFeatureTests(failedTestName) {
-        var fullMessage = "Your environment does not support all the features required by log4javascript."
-                + "Test failed: " + failedTestName;
+        var fullMessage = "Your environment does not support all the features required by log4javascript." +
+                "Test failed: " + failedTestName;
 
         if (window) {
             fullMessage += [
@@ -194,15 +187,13 @@ var log4javascript = (function() {
     function toStr(obj) {
         if (typeof obj == STRING) {
             return obj;
-        } else if (typeof obj.toString == FUNCTION) {
-            return obj.toString();
         } else {
             try {
                 return String(obj);
-            } catch (ex) {
+            } catch (e) {
                 try {
                     return objectToString.call(obj);
-                } catch (ex) {
+                } catch (eInner) {
                     return "";
                 }
             }
@@ -264,13 +255,35 @@ var log4javascript = (function() {
         return hasOwnPropertyExists;
     });
 
+    var extend;
+
     if (hasOwnPropertyExists) {
-        api.extend = function(o, props) {
+        api.extend = extend = function(o, props) {
             for (var i in props) {
                 if (props.hasOwnProperty(i)) {
                     o[i] = props[i];
                 }
             }
+        };
+    }
+    
+    if (extend) {
+        api.createSettings = function(defaults) {
+            function Settings() {}
+            
+            var proto = Settings.prototype;
+            extend(proto, defaults);
+            proto.defaults = defaults;
+
+            proto.set = function(props) {
+                for (var i in props) {
+                    if (defaults.hasOwnProperty(i) && props.hasOwnProperty(i)) {
+                        this[i] = props[i];
+                    }
+                }
+            };
+
+            return new Settings();
         };
     }
 
@@ -300,7 +313,6 @@ var log4javascript = (function() {
         getUrlFileName: getUrlFileName,
         urlEncode: urlEncode
     };
-
 
     // Returns a nicely formatted representation of an error
     // TODO: Research safest way of getting string representations of error and error-like objects
