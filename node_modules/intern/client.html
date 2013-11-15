@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Browser test runner</title>
+		<script src="node_modules/dojo/dojo.js"></script>
+		<script>
+(function () {
+	var basePath = location.pathname.replace(/\/+[^\/]+$/, '/');
+
+	require({
+		baseUrl: basePath + (basePath === '/__intern/' ? '../' : '../../'),
+		packages: [
+			{ name: 'intern', location: basePath }
+		],
+		map: {
+			intern: {
+				dojo: 'intern/node_modules/dojo',
+				chai: 'intern/node_modules/chai/chai'
+			}
+		}
+	}, [ 'intern/client' ]);
+})();
+		</script>
+	</head>
+</html>
