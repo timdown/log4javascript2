@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>log4javascript 2 - Tests</title>
+
+        <!-- Testing framework -->
+        <script type="text/javascript" src="xntest.js"></script>
+        <script type="text/javascript">
+            xn.test.enableLogging = false;
+            xn.test.enableStackTraces = true;
+        </script>
+
+<!--
+        <script type="text/javascript" src="includescripts.js"></script>
+-->
+        <script type="text/javascript" src="../dist/log4javascript.js"></script>
+        <script type="text/javascript" src="testutils.js"></script>
+        <script type="text/javascript" src="tests/tests_core.js"></script>
+        <script type="text/javascript" src="tests/tests_simpledateformat.js"></script>
+        <script type="text/javascript" src="tests/tests_formatobjectexpansion.js"></script>
+        <script type="text/javascript" src="tests/tests_patternlayout.js"></script>
+        <script type="text/javascript" src="tests/tests_logger.js"></script>
+        <script type="text/javascript" src="tests/tests_browserconsoleappender.js"></script>
+        <script type="text/javascript" src="tests/tests_ajaxappender.js"></script>
+        <link rel="stylesheet" type="text/css" href="tests.css"/>
+    </head>
+    <body>
+        <div id="messages" class="test"></div>
+    </body>
+</html>

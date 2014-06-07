@@ -2,7 +2,8 @@
     // BrowserConsoleAppender only works in browser environments with a window.console logging implementation or Opera
 
     var Level = api.Level, DEBUG = Level.DEBUG, INFO = Level.INFO, WARN = Level.WARN, ERROR = Level.ERROR;
-
+    var global = api.globalObj;
+    
     if (!api.environment.isBrowser) {
         alert("BrowserConsoleAppender can only work when running in a browser");
         return;
@@ -11,6 +12,20 @@
     function BrowserConsoleAppender() {}
 
     BrowserConsoleAppender.prototype = new api.Appender();
+    
+    function createConsoleMethodWrapper(methodName, argumentCount) {
+        return function() {
+            var console = global.console;
+            if ( console && console[methodName] ) {
+                switch (argumentCount) {
+                    case 0:
+                        return console[methodName]();
+                    case 1:
+                        return console[methodName](arguments[0]);
+                }
+            }
+        };
+    }
 
     api.extend(BrowserConsoleAppender.prototype, {
         layout: new api.NullLayout(),
@@ -29,8 +44,7 @@
                 return formattedMessage;
             };
 
-            if (window.console && window.console.log) { // Safari and Firebug
-                console = window.console;
+            if ( (console = global.console) && console.log ) { // Browsers with built-in console
                 formattedMesage = getFormattedMessage();
                 // Log to Firebug using its logging methods or revert to the console.log
                 // method in Safari
@@ -45,35 +59,17 @@
                 } else {
                     console.log(formattedMesage);
                 }
-            } else if ((typeof window.opera != "undefined") && window.opera.postError) { // Opera
-                window.opera.postError(getFormattedMessage());
+            } else if ((typeof global.opera != "undefined") && global.opera.postError) { // Opera
+                global.opera.postError( getFormattedMessage() );
             }
         },
 
-        group: function(name) {
-            if (window.console && window.console.group) {
-                window.console.group(name);
-            }
-        },
+        group: createConsoleMethodWrapper("group", 1),
+        groupEnd: createConsoleMethodWrapper("groupEnd", 0),
 
-        groupEnd: function() {
-            if (window.console && window.console.groupEnd) {
-                window.console.groupEnd();
-            }
-        },
-
-        // TODO: Check whether adding these two functions is correct
-        time: function(name) {
-            if (window.console && window.console.time) {
-                window.console.time(name);
-            }
-        },
-
-        timeEnd: function() {
-            if (window.console && window.console.timeEnd) {
-                window.console.timeEnd();
-            }
-        },
+        // TODO: Check whether adding the next two functions is correct
+        time: createConsoleMethodWrapper("time", 1),
+        timeEnd: createConsoleMethodWrapper("timeEnd", 0),
 
         toString: function() {
             return "BrowserConsoleAppender";

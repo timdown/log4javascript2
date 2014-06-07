@@ -1,8 +1,9 @@
 (function(api) {
     var STRING = "string",
         toStr = api.Strings.toStr,
-        boolParam = api.boolParam,
-        proto = new api.Layout("XmlLayout");
+        //boolParam = api.boolParam,
+        proto = new api.Layout("XmlLayout"),
+        newLine = "\n";
 
     function escapeCdata(str) {
         return str.replace(/\]\]>/g, "]]>]]&gt;<![CDATA[");
@@ -13,20 +14,19 @@
         return "<log4javascript:message><![CDATA[" + escapeCdata(message) + "]]></log4javascript:message>";
     }
 
-    function XmlLayout(combineMessages) {
-        this.combineMessages = boolParam(combineMessages, true);
+    function XmlLayout(options) {
+        this.options.set(options);
         this.init();
     }
 
     XmlLayout.prototype = proto;
 
     api.extend(proto, {
+        options: api.createSettings({
+            combineMessages: true
+        }),
         contentType: "text/xml",
         shouldIgnoreThrowable: false,
-
-        isCombinedMessages: function() {
-            return this.combineMessages;
-        },
 
         format: function(loggingEvent) {
             var i, len, field, parts = [
@@ -43,7 +43,7 @@
 
             parts.push(" level=\"" + loggingEvent.level.name + "\">\r\n");
 
-            if (this.combineMessages) {
+            if (this.options.combineMessages) {
                 parts.push(formatMessage(loggingEvent.getCombinedMessages()));
             } else {
                 parts.push("<log4javascript:messages>" + newLine);
@@ -55,13 +55,13 @@
             if (this.hasCustomFields()) {
                 for (i = 0, len = this.customFields.length; i < len; ++i) {
                     field = this.customFields[i];
-                    parts.push("<log4javascript:customfield name=\"" + field.name + "\"><![CDATA["
-                        + field.value.toString() + "]]></log4javascript:customfield>\r\n");
+                    parts.push("<log4javascript:customfield name=\"" + field.name + "\"><![CDATA[" +
+                        field.value.toString() + "]]></log4javascript:customfield>\r\n");
                 }
             }
             if (loggingEvent.exception) {
                 parts.push("<log4javascript:exception><![CDATA[" +
-                    getExceptionStringRep(loggingEvent.exception) +
+                    api.exceptionToStr(loggingEvent.exception) +
                     "]]></log4javascript:exception>\r\b" + newLine);
             }
             parts.push("</log4javascript:event>\r\n\r\n");
@@ -69,5 +69,5 @@
         }
     });
 
-	api.XmlLayout = XmlLayout;
+    api.XmlLayout = XmlLayout;
 })(log4javascript);

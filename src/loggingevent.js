@@ -20,6 +20,7 @@
             return (messages.length == 1) ? messages[0] : messages.join("\r\n");
         },
 
+        
 /*
         getRenderedMessages: function() {
             var renderedMessages = [];

@@ -3,7 +3,6 @@
         NUMBER = "number",
         BOOLEAN = "boolean",
         toStr = api.Strings.toStr,
-        boolParam = api.boolParam,
         proto = new api.Layout("JsonLayout");
 
     function escapeNewLines(str) {
@@ -40,9 +39,10 @@
         return formattedValue;
     }
 
-    function JsonLayout(readable, combineMessages) {
-        this.readable = readable = boolParam(readable, false);
-        this.combineMessages = boolParam(combineMessages, true);
+    function JsonLayout(options) {
+        var readable;
+        this.options.set(options);
+        this.readable = readable = this.options.readable;
         this.batchHeader = readable ? "[\r\n" : "[";
         this.batchFooter = readable ? "]\r\n" : "]";
         this.batchSeparator = readable ? ",\r\n" : ",";
@@ -56,15 +56,15 @@
     JsonLayout.prototype = proto;
 
     api.extend(proto, {
+        options: api.createSettings({
+            readable: false,
+            combineMessages: true
+        }),
         contentType: "application/json",
         shouldIgnoreThrowable: false,
 
-        isCombinedMessages: function() {
-            return this.combineMessages;
-        },
-
         format: function(loggingEvent) {
-            var dataValues = this.getDataValues(loggingEvent, this.combineMessages);
+            var dataValues = this.getDataValues(loggingEvent, this.options.combineMessages);
             var str = "{" + this.lineBreak;
 
             for (var i = 0, finalIndex = dataValues.length - 1, dataValue; i <= finalIndex; ++i) {

@@ -1,5 +1,4 @@
 var log4javascript = (function() {
-
     var UNDEFINED = "undefined",
         STRING = "string",
         NUMBER = "number",
@@ -75,11 +74,12 @@ var log4javascript = (function() {
     var addCustomEventSupport = (function() {
         function createListenersArray(obj, eventType) {
             var created = false;
-            if (!obj.eventListeners) {
-                obj.eventListeners = {};
+            var listeners = obj.eventListeners;
+            if (!listeners) {
+                obj.eventListeners = listeners = {};
             }
-            if (!obj.eventListeners[eventType]) {
-                obj.eventListeners[eventType] = [];
+            if (!listeners[eventType]) {
+                listeners[eventType] = [];
                 created = true;
             }
             return created;

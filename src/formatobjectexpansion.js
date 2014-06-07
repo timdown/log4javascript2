@@ -26,7 +26,7 @@
         constructorFunc.prototype.toFormatted = toFormattedFunc;
     };
 
-    api.expandObject = function() {
+    api.expandObject = (function() {
         var STRING_NODE = 1, ARRAY_NODE = 2, OBJECT_NODE = 3, EXPANDED_NODE = 4;
 
         function expandProperty(obj, prop, levels, isArray, expansion) {
@@ -203,5 +203,5 @@
             //console.log(obj, maxDepth, indentation, quoteStrings, alphabetical, showMethods, new Expansion(obj, maxDepth, showMethods, alphabetical, quoteStrings));
             return new Expansion(obj, maxDepth, showMethods, alphabetical, quoteStrings);
         };
-    }();
+    })();
 })(log4javascript);
