@@ -109,7 +109,8 @@ module.exports = function(grunt) {
                     "src/browserconsoleappender.js"
                 ],
                 options: {
-                    specs: "test/*.spec.js"
+                    specs: "test/tests/*.spec.js",
+                    helpers: "test/helpers/*.js"
                 }
             }
         }
@@ -121,5 +122,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-jasmine");
 
     // Default task.
-    grunt.registerTask("default", ["jshint:beforeconcat", "concat", "jshint:afterconcat", "uglify", "jasmine"]);
+    grunt.registerTask("default", ["jshint:beforeconcat", "concat", "jshint:afterconcat", "uglify", "jasmine", "jasmine:test:build"]);
 };

@@ -1,25 +1,29 @@
-var ArrayAppender = function(layout) {
-    if (layout) {
-        this.setLayout(layout);
-    }
-    this.logMessages = [];
-};
+function createArrayAppenderConstructor() {
+    var ArrayAppender = function(layout) {
+        if (layout) {
+            this.setLayout(layout);
+        }
+        this.logMessages = [];
+    };
 
-ArrayAppender.prototype = new log4javascript.Appender();
+    ArrayAppender.prototype = new log4javascript.Appender();
 
-ArrayAppender.prototype.layout = new log4javascript.NullLayout();
+    ArrayAppender.prototype.layout = new log4javascript.NullLayout();
 
-ArrayAppender.prototype.append = function(loggingEvent) {
-    var formattedMessage = this.getLayout().format(loggingEvent);
-    if (this.getLayout().ignoresThrowable()) {
-        formattedMessage += loggingEvent.getThrowableStrRep();
-    }
-    this.logMessages.push(formattedMessage);
-};
+    ArrayAppender.prototype.append = function(loggingEvent) {
+        var formattedMessage = this.getLayout().format(loggingEvent);
+        if (this.getLayout().ignoresThrowable()) {
+            formattedMessage += loggingEvent.getThrowableStrRep();
+        }
+        this.logMessages.push(formattedMessage);
+    };
 
-ArrayAppender.prototype.toString = function() {
-    return "[ArrayAppender]";
-};
+    ArrayAppender.prototype.toString = function() {
+        return "[ArrayAppender]";
+    };
+
+    return ArrayAppender;
+}
 
 // Simply tests a layout for exceptions when formatting
 function testLayoutWithVariables(layout, t) {
@@ -53,7 +57,7 @@ function testLayoutWithVariables(layout, t) {
     var arrayOfTestItems = [emptyObject, emptyString, emptyString, localUndefined, oneLevelObject,
             twoLevelObject, threeLevelObject, anArray];
 
-    t.log("Testing layout " + layout)
+    t.log("Testing layout " + layout);
     for (var i = 0; i < arrayOfTestItems.length; i++) {
         var ex = new Error("Test error");
         var loggingEvent = new log4javascript.LoggingEvent(t.logger, new Date(), log4javascript.Level.INFO,
