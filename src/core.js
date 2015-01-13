@@ -341,7 +341,7 @@ var log4javascript = (function() {
     /* ---------------------------------------------------------------------- */
     /* Browser-related */
 
-    if (typeof window != UNDEFINED) {
+    if (typeof window != UNDEFINED && typeof window.document != UNDEFINED) {
         var BrowserEnvironment = function() {
             this.isBrowser = true;
         };
