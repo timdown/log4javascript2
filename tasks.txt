@@ -1,0 +1,8 @@
+- Migrate all 1.x tests to Jasmine
+- Review/re-implement object expansion
+- Implement PopUpAppender and InPageAppender
+- Implement AjaxAppender
+- Implement AMD/UMD/whatever
+- Work out how to package modules in a default build
+- Implement stubs. Possibly generated? From source annotations?
+- Implement custom builder

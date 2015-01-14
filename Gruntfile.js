@@ -34,7 +34,7 @@ module.exports = function(grunt) {
                     "src/simpledateformat.js",
                     "src/patternlayout.js",
                     "src/alertappender.js",
-                    "src/browserconsoleappender.js"
+                    "src/hostconsoleappender.js"
                 ],
                 dest: unminifiedFile
             }
@@ -106,7 +106,7 @@ module.exports = function(grunt) {
                     "src/simpledateformat.js",
                     "src/patternlayout.js",
                     "src/alertappender.js",
-                    "src/browserconsoleappender.js"
+                    "src/hostconsoleappender.js"
                 ],
                 options: {
                     specs: "test/tests/*.spec.js",

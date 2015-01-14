@@ -1,2 +1,9 @@
+- Separate AMD modules for appenders and layouts
+- Not tied to the browser (unlike 1.x)
+- Redesigned API: options objects rather than loads of constructor parameters and setters and getters
+- Customizable console (ability to specify which UI elements to use: filters, search, console, close button etc.)
+- Jasmine tests
+- Grunt builder
+- Node.js file logger (maybe later?)
 - Close (x) button on InPageAppender
-- Separate AMD modules for appenders?
+

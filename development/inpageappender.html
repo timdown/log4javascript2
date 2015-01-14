@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="../src/core.js"></script>
+    <script src="../src/level.js"></script>
+    <script src="../src/timer.js"></script>
+    <script src="../src/layout.js"></script>
+    <script src="../src/renderer.js"></script>
+    <script src="../src/loggingevent.js"></script>
+    <script src="../src/appender.js"></script>
+    <script src="../src/logger.js"></script>
+    <script src="../src/formatobjectexpansion.js"></script>
+    <script src="../src/nulllayout.js"></script>
+    <script src="../src/simplelayout.js"></script>
+    <script src="../src/httppostdatalayout.js"></script>
+    <script src="../src/jsonlayout.js"></script>
+    <script src="../src/xmllayout.js"></script>
+    <script src="../src/simpledateformat.js"></script>
+    <script src="../src/patternlayout.js"></script>
+    <script src="../src/alertappender.js"></script>
+    <script src="../src/consoleappenders.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+    var appender = new log4javascript.InPageAppender({
+        containerElement: document.getElementById("log")
+    });
+    
+    var log = log4javascript.getLogger("main");
+    log.addAppender(appender);
+    log.debug("A message");
+</script>
+
+</body>
+</html>

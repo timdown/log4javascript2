@@ -40,7 +40,7 @@
                 return formattedMessage;
             };
 
-            if ( (console = global.console) && console.log ) { // Browsers with built-in console
+            if ( api.hostConsoleExists && (console = global.console) && console.log ) { // Browsers with built-in console
                 formattedMesage = getFormattedMessage();
                 // Log to Firebug using its logging methods or revert to the console.log
                 // method in Safari

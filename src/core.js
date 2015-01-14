@@ -1,4 +1,4 @@
-var log4javascript = (function() {
+var log4javascript = (function(globalObj) {
     var UNDEFINED = "undefined",
         STRING = "string",
         NUMBER = "number",
@@ -7,16 +7,21 @@ var log4javascript = (function() {
         UNKNOWN = "unknown",
         startUpTime = new Date(),
         environment,
-
-        // Create a reference to the global object
-        global = (function() { return this; })(),
         objectToString = Object.prototype.toString;
 
     /* ---------------------------------------------------------------------- */
 
-    /* Array-related */
+    function Log4JavaScript() {}
 
-    var arrayIndexOf = Array.prototype.indexOf ?
+    var api = new Log4JavaScript();
+
+    /* ---------------------------------------------------------------------- */
+
+    /* Array-related */
+    
+    var arrayPrototype = Array.prototype;
+
+    var arrayIndexOf = arrayPrototype.indexOf ?
         function(arr, val) {
             return arr.indexOf(val);
         } :
@@ -29,6 +34,27 @@ var log4javascript = (function() {
             }
             return -1;
         };
+
+    function forEachArrayLike(arr, callback, thisObject) {
+        var val;
+        if (typeof callback != FUNCTION) {
+            throw new TypeError();
+        }
+        thisObject = thisObject || globalObj;
+        for (var i = 0, len = arr.length; i < len; ++i) {
+            val = arr[i];
+            if (typeof val != "undefined") {
+                callback.call(thisObject, val, i, arr);
+            }
+        }
+    }
+
+    var forEach = (typeof arrayPrototype.forEach == FUNCTION) ?
+        function(arr, callback, thisObject) {
+            return arr.forEach(callback, thisObject);
+        } :
+
+        forEachArrayLike;
 
     function arrayRemove(arr, val) {
         var index = arrayIndexOf(arr, val);
@@ -48,8 +74,8 @@ var log4javascript = (function() {
         return Array.prototype.slice.call(args, startIndex, endIndex);
     }
 
-    var nodeListExists = (typeof global.NodeList != UNDEFINED),
-        htmlCollectionExists = (typeof global.HTMLCollection != UNDEFINED);
+    var nodeListExists = (typeof globalObj.NodeList != UNDEFINED),
+        htmlCollectionExists = (typeof globalObj.HTMLCollection != UNDEFINED);
 
     /*
      We want anything Array-like to be treated as an array in expansions, including host collections such as NodeList
@@ -63,9 +89,29 @@ var log4javascript = (function() {
             (typeof o == OBJECT && isFinite(o.length) &&
                 /* Duck typing check for Array objects, arguments objects and IE node lists respectively */
                 (typeof o.splice != UNDEFINED || typeof o.callee == FUNCTION || typeof o.item != UNDEFINED) ) ||
-            (nodeListExists && o instanceof global.NodeList) ||
-            (htmlCollectionExists && o instanceof global.HTMLCollection);
+            (nodeListExists && o instanceof globalObj.NodeList) ||
+            (htmlCollectionExists && o instanceof globalObj.HTMLCollection);
     }
+
+    /* ---------------------------------------------------------------------- */
+
+    // Trio of functions taken from Peter Michaux's article:
+    // http://peter.michaux.ca/articles/feature-detection-state-of-the-art-browser-scripting
+    function isHostMethod(o, p) {
+        var t = typeof o[p];
+        return t == FUNCTION || (!!(t == OBJECT && o[p])) || t == UNKNOWN;
+    }
+
+    function isHostObject(o, p) {
+        return !!(typeof o[p] == OBJECT && o[p]);
+    }
+
+    function isHostProperty(o, p) {
+        return typeof o[p] != UNDEFINED;
+    }
+    
+    var hostConsoleExists = isHostObject(globalObj, "console");
+    api.hostConsoleExists = hostConsoleExists;
 
     /* ---------------------------------------------------------------------- */
 
@@ -114,17 +160,14 @@ var log4javascript = (function() {
 
     /* ---------------------------------------------------------------------- */
 
-    function Log4JavaScript() {}
-
     addCustomEventSupport(Log4JavaScript.prototype);
 
-    var api = new Log4JavaScript();
     api.version = "2.0";
     api.startUpTime = startUpTime;
     api.uniqueId = "log4javascript_" + (+startUpTime) + "_" + Math.floor(Math.random() * 1e8);
-    api.enabled = !( (typeof global.log4javascript_disabled != UNDEFINED) && global.log4javascript_disabled );
+    api.enabled = !( (typeof globalObj.log4javascript_disabled != UNDEFINED) && globalObj.log4javascript_disabled );
     api.addCustomEventSupport = addCustomEventSupport;
-    api.globalObj = global;
+    api.globalObj = globalObj;
     api.showStackTraces = false;
 
     function reportError(message, exception) {
@@ -138,7 +181,9 @@ var log4javascript = (function() {
         remove: arrayRemove,
         contains: arrayContains,
         toArray: toArray,
-        isArrayLike: isArrayLike
+        isArrayLike: isArrayLike,
+        forEach: forEach,
+        forEachArrayLike: forEachArrayLike
     };
 
     /* ---------------------------------------------------------------------- */
@@ -169,6 +214,12 @@ var log4javascript = (function() {
     }
 
     api.addFeatureTest = addFeatureTest;
+    
+    api.failModule = function(moduleName, message) {
+        if (hostConsoleExists) {
+            globalObj.console.log("log4javascript module " + moduleName + " failed to load. Reason: " + message);
+        }
+    };
 
     /* ---------------------------------------------------------------------- */
     /* Utility functions */
@@ -224,8 +275,8 @@ var log4javascript = (function() {
     // TODO: Research errors properly
     var isError = (function() {
         var errorConstructors = [];
-        var errorPotentialConstructors = [global.Error, global.DOMException, global.RangeException,
-            global.EventException];
+        var errorPotentialConstructors = [globalObj.Error, globalObj.DOMException, globalObj.RangeException,
+            globalObj.EventException];
         var i = errorPotentialConstructors.length, c;
         while (i--) {
             c = errorPotentialConstructors[i];
@@ -255,16 +306,47 @@ var log4javascript = (function() {
         return hasOwnPropertyExists;
     });
 
-    var extend;
+    var extend, extendHostObject;
 
     if (hasOwnPropertyExists) {
-        api.extend = extend = function(o, props) {
-            for (var i in props) {
-                if (props.hasOwnProperty(i)) {
-                    o[i] = props[i];
+        api.extend = extend = function(obj, props, deep) {
+            var o, p;
+            if (props) {
+                for (var i in props) {
+                    if (props.hasOwnProperty(i)) {
+                        o = obj[i];
+                        p = props[i];
+                        if (deep && (typeof p == "object") && !isArrayLike(p) && (typeof o == "object") && !isArrayLike(o)) {
+                            extend(o, p, true);
+                        } else {
+                            obj[i] = p;
+                        }
+                    }
+                }
+                // Account for special case of toString in IE
+                if (props.hasOwnProperty("toString")) {
+                    obj.toString = props.toString;
                 }
             }
+            return obj;
         };
+
+        api.extendHostObject = extendHostObject = function(obj, props) {
+            var p;
+            if (props) {
+                for (var i in props) {
+                    if (props.hasOwnProperty(i)) {
+                        p = props[i];
+                        if ((typeof p == "object") && isHostObject(obj, i)) {
+                            extendHostObject(obj[i], p);
+                        } else {
+                            obj[i] = p;
+                        }
+                    }
+                }
+            }
+            return obj;
+        }
     }
     
     if (extend) {
@@ -285,6 +367,12 @@ var log4javascript = (function() {
 
             return new Settings();
         };
+        
+        extend(api, {
+            isHostMethod: isHostMethod,
+            isHostObject: isHostObject,
+            isHostProperty: isHostProperty
+        });
     }
 
     function getExceptionMessage(ex) {
@@ -375,4 +463,4 @@ var log4javascript = (function() {
     }
 
     return api;
-})();
+})(this);

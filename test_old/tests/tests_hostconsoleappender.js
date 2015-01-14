@@ -1,4 +1,4 @@
-xn.test.suite("BrowserConsoleAppender", function(s) {
+xn.test.suite("HostConsoleAppender", function(s) {
     s.setUp = function(t) {
         t.logger = log4javascript.getLogger("test");
 		t.logger.removeAllAppenders();
@@ -13,8 +13,8 @@ xn.test.suite("BrowserConsoleAppender", function(s) {
 
 	// Tests for exceptions when logging
 	s.test("Logging/grouping test", function(t) {
-		var browserConsoleAppender = new log4javascript.BrowserConsoleAppender();
-		t.logger.addAppender(browserConsoleAppender);
+		var hostConsoleAppender = new log4javascript.HostConsoleAppender();
+		t.logger.addAppender(hostConsoleAppender);
 
 		// Test each level
 		t.logger.trace("TEST TRACE");
@@ -36,6 +36,6 @@ xn.test.suite("BrowserConsoleAppender", function(s) {
 		t.logger.groupEnd("TEST GROUP");
 		t.logger.info("TEST INFO");
 
-		t.logger.removeAppender(browserConsoleAppender);
+		t.logger.removeAppender(hostConsoleAppender);
 	});
 }, false);
