@@ -6,4 +6,5 @@
 - Grunt builder
 - Node.js file logger (maybe later?)
 - Close (x) button on InPageAppender
-
+- PopUpAppender able to keep old logging messages when it reopens (see
+  http://stackoverflow.com/questions/19386020/log4javascript-open-the-same-popupappender-so-all-the-log-is-in-one-log-window)
